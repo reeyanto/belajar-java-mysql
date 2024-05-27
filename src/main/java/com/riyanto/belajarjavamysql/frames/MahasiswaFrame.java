@@ -8,9 +8,10 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 
-public class MahasiswaFrame extends javax.swing.JFrame {
+public final class MahasiswaFrame extends javax.swing.JFrame {
     
     private final MahasiswaRepository mahasiswaRepo;
+    private List<Mahasiswa> mahasiswaList;
 
     public MahasiswaFrame() {
         initComponents();
@@ -20,8 +21,8 @@ public class MahasiswaFrame extends javax.swing.JFrame {
     }
     
     public void tampilSemuaMahasiswa() {
+        mahasiswaList = mahasiswaRepo.getAllMahasiswa();
         String[] columnNames = {"Nomor Induk Mahasiswa", "Nama Lengkap", "Program Studi"};
-        List<Mahasiswa> mahasiswaList = mahasiswaRepo.getAllMahasiswa();
         Object[][] data = new Object[mahasiswaList.size()][3];
         
         for(int i=0; i<mahasiswaList.size(); i++) {
@@ -100,27 +101,25 @@ public class MahasiswaFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(13, 13, 13)
+                .addGap(15, 15, 15)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnBatal)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(cmbProdi, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(btnSimpan)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(btnHapus)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
-                                    .addComponent(btnBatal))
-                                .addComponent(txtNim, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtNama, javax.swing.GroupLayout.Alignment.LEADING))))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(18, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnSimpan)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnHapus))
+                            .addComponent(txtNama, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
+                            .addComponent(txtNim)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 450, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -144,7 +143,7 @@ public class MahasiswaFrame extends javax.swing.JFrame {
                     .addComponent(btnBatal))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         pack();
@@ -165,7 +164,7 @@ public class MahasiswaFrame extends javax.swing.JFrame {
             Mahasiswa mahasiswa = new Mahasiswa(nim, nama, String.valueOf(prodi));
             boolean result;
             
-            if(btnSimpan.equals("Simpan")) {
+            if(btnSimpan.getText().equals("Simpan")) {
                 result = mahasiswaRepo.insertMahasiswa(mahasiswa);
             } else {
                 result = mahasiswaRepo.updateMahasiswa(mahasiswa);
@@ -187,7 +186,6 @@ public class MahasiswaFrame extends javax.swing.JFrame {
     private void tblMahasiswaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblMahasiswaMouseClicked
         // TODO add your handling code here:
         int row = tblMahasiswa.getSelectedRow();
-        List<Mahasiswa> mahasiswaList = mahasiswaRepo.getAllMahasiswa();
         Mahasiswa mahasiswa = mahasiswaList.get(row);
         
         if(mahasiswa != null) {
@@ -195,6 +193,7 @@ public class MahasiswaFrame extends javax.swing.JFrame {
             txtNama.setText(mahasiswa.getNama());
             cmbProdi.setSelectedIndex(Integer.parseInt(mahasiswa.getProdi()));
             
+            txtNim.setEnabled(false);
             btnSimpan.setText("Update");
             btnHapus.setEnabled(true);
         }
@@ -242,10 +241,8 @@ public class MahasiswaFrame extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MahasiswaFrame().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new MahasiswaFrame().setVisible(true);
         });
     }
 
@@ -268,6 +265,7 @@ public class MahasiswaFrame extends javax.swing.JFrame {
         txtNama.setText(null);
         cmbProdi.setSelectedIndex(0);
         
+        txtNim.setEnabled(true);
         txtNim.requestFocus();
         btnHapus.setEnabled(false);
         btnSimpan.setText("Simpan");
